@@ -1,2 +1,2 @@
-# telaly-and-orangey
+# tealy-and-orangey
 Tealy And Orangey game
