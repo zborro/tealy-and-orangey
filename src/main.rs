@@ -8,11 +8,11 @@ use crate::menu::{Menu, MenuSelection};
 
 const SCREEN_WIDTH: u32 = 1280;
 const SCREEN_HEIGHT: u32 = 960;
-const _COLOR_TEALY_DARK: Color = Color::new(0.17, 0.40, 0.45, 1.00);
+const COLOR_TEALY_DARK: Color = Color::new(0.17, 0.40, 0.45, 1.00);
 const COLOR_TEALY: Color = Color::new(0.19, 0.59, 0.69, 1.00);
 const COLOR_TEALY_LIGHT: Color = Color::new(0.41, 0.78, 0.86, 1.00);
 
-const _COLOR_ORANGEY_DARK: Color = Color::new(0.43, 0.26, 0.08, 1.00);
+const COLOR_ORANGEY_DARK: Color = Color::new(0.43, 0.26, 0.08, 1.00);
 const COLOR_ORANGEY: Color = Color::new(0.67, 0.39, 0.09, 1.00);
 const COLOR_ORANGEY_LIGHT: Color = Color::new(0.86, 0.56, 0.26, 1.00);
 
