@@ -148,6 +148,34 @@ impl Menu {
             Some(COLOR_ORANGEY_DARK),
         );
     }
+
+    fn draw_credits(&self) {
+        let bottom = SCREEN_HEIGHT as f32 * 0.85;
+        let color = COLOR_ORANGEY_LIGHT;
+        let shadow_color = Some(COLOR_ORANGEY_DARK);
+
+        self.draw_text(
+            "Original game by Anthony Gowland",
+            vec2(SCREEN_WIDTH as f32 / 2., bottom),
+            60,
+            color,
+            shadow_color,
+        );
+        self.draw_text(
+            "Remake by Slawomir Zborowski (https://slawomir.net)",
+            vec2(SCREEN_WIDTH as f32 / 2., bottom + 60_f32),
+            40,
+            color,
+            shadow_color,
+        );
+        self.draw_text(
+            "Like this game? Check out Binaries! https://binaries.ant-workshop.com/",
+            vec2(SCREEN_WIDTH as f32 / 2., bottom + 100_f32),
+            40,
+            color,
+            shadow_color,
+        );
+    }
 }
 
 impl Node for Menu {
@@ -156,6 +184,7 @@ impl Node for Menu {
     fn draw(node: RefMut<Self>) {
         node.draw_background();
         node.draw_logo();
+        node.draw_credits();
         draw_text_ex(
             format!("menu selection: {}", node.index).as_str(),
             32.,
