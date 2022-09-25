@@ -1,10 +1,11 @@
 use macroquad::experimental::collections::storage;
 use macroquad::prelude::*;
 
+mod balls;
 mod game;
+mod level;
 mod menu;
 mod resources;
-mod level;
 
 use crate::game::Game;
 use crate::menu::{Menu, MenuSelection};
