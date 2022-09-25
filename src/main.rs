@@ -1,13 +1,24 @@
+use macroquad::experimental::collections::storage;
 use macroquad::prelude::*;
 
 mod game;
 mod menu;
+mod resources;
 
 use crate::game::Game;
 use crate::menu::{Menu, MenuSelection};
+use crate::resources::Resources;
 
 const SCREEN_WIDTH: u32 = 1280;
 const SCREEN_HEIGHT: u32 = 960;
+
+const TILE_SIZE_PX: u32 = 32;
+const MAP_WIDTH: usize = 40;
+const MAP_LAYER_BG: u8 = 0;
+const MAP_LAYER_PHYSICS: u8 = 1;
+const MAP_LAYER_META: u8 = 2;
+const MAP_LAYER_SPAWN: u8 = 3;
+
 const COLOR_TEALY_DARK: Color = Color::new(0.17, 0.40, 0.45, 1.00);
 const COLOR_TEALY: Color = Color::new(0.19, 0.59, 0.69, 1.00);
 const COLOR_TEALY_LIGHT: Color = Color::new(0.41, 0.78, 0.86, 1.00);
@@ -18,6 +29,8 @@ const COLOR_ORANGEY_LIGHT: Color = Color::new(0.86, 0.56, 0.26, 1.00);
 
 #[macroquad::main("TealyAndOrangey")]
 async fn main() {
+    storage::store(Resources::new().await.unwrap());
+
     loop {
         let mut selection;
         let menu_handle = scene::add_node(Menu::new());
