@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 mod game;
 mod menu;
 mod resources;
+mod level;
 
 use crate::game::Game;
 use crate::menu::{Menu, MenuSelection};

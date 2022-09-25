@@ -1,26 +1,33 @@
 use macroquad::experimental::scene::{Node, RefMut};
 use macroquad::prelude::*;
 
-pub struct Game;
+use crate::level::Level;
+
+#[derive(PartialEq, Eq)]
+pub enum GameColor {
+    Tealy,
+    Orangey,
+}
+
+
+pub struct Game {
+    level: Level,
+}
 
 impl Game {
     pub fn new(_start_level: u32) -> Game {
-        Game
+        let level = Level::new().unwrap();
+
+        Game {
+            level,
+        }
     }
 }
 
 impl Node for Game {
-    fn draw(_node: RefMut<Self>) {
-        draw_text_ex(
-            "Game...",
-            32.,
-            32.,
-            TextParams {
-                color: WHITE,
-                font_size: 32,
-                ..Default::default()
-            },
-        );
+    fn draw(node: RefMut<Self>) {
+        clear_background(BLACK);
+        node.level.draw();
     }
 
     fn update(mut _node: RefMut<Self>) {}
