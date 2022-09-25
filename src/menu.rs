@@ -75,7 +75,7 @@ impl Menu {
             draw_text_ex(
                 text,
                 center.x - text_size.width / 2. + SHADOW_OFFSET as f32,
-                center.y - text_size.height / 2. + SHADOW_OFFSET as f32,
+                center.y + text_size.height / 2. + SHADOW_OFFSET as f32,
                 TextParams {
                     font_size,
                     color: shadow_color,
@@ -87,7 +87,7 @@ impl Menu {
         draw_text_ex(
             text,
             center.x - text_size.width / 2.,
-            center.y - text_size.height / 2.,
+            center.y + text_size.height / 2.,
             TextParams {
                 font_size,
                 color,
@@ -122,7 +122,7 @@ impl Menu {
             "Tealy",
             vec2(
                 SCREEN_WIDTH as f32 / 2.,
-                SCREEN_HEIGHT as f32 / 3.5 - font_size as f32,
+                SCREEN_HEIGHT as f32 / 4. - font_size as f32,
             ),
             font_size,
             COLOR_TEALY,
@@ -131,7 +131,7 @@ impl Menu {
 
         self.draw_text(
             "&",
-            vec2(SCREEN_WIDTH as f32 / 2., SCREEN_HEIGHT as f32 / 3.5),
+            vec2(SCREEN_WIDTH as f32 / 2., SCREEN_HEIGHT as f32 / 4.),
             font_size,
             WHITE,
             Some(GRAY),
@@ -141,7 +141,7 @@ impl Menu {
             "Orangey",
             vec2(
                 SCREEN_WIDTH as f32 / 2.,
-                SCREEN_HEIGHT as f32 / 3.5 + font_size as f32,
+                SCREEN_HEIGHT as f32 / 4. + font_size as f32,
             ),
             font_size,
             COLOR_ORANGEY,
@@ -149,31 +149,112 @@ impl Menu {
         );
     }
 
+    fn draw_menu_option(
+        &self,
+        text: &str,
+        center: Vec2,
+        selected: bool,
+        color: Color,
+        shadow_color: Color,
+    ) {
+        self.draw_text(text, center, 60, color, Some(shadow_color));
+        let offset = 250.;
+        let triangle_width = 30.;
+        let triangle_height = 30.;
+
+        // TODO (optional) fix draw_text, so this +7. is not needed.
+        let center = center + vec2(0., 7.);
+
+        if selected {
+            draw_triangle(
+                vec2(
+                    center.x - offset - triangle_width,
+                    center.y - triangle_height / 2.,
+                ),
+                vec2(
+                    center.x - offset - triangle_width,
+                    center.y + triangle_height / 2.,
+                ),
+                vec2(center.x - offset, center.y),
+                shadow_color,
+            );
+            draw_triangle_lines(
+                vec2(
+                    center.x - offset - triangle_width,
+                    center.y - triangle_height / 2.,
+                ),
+                vec2(
+                    center.x - offset - triangle_width,
+                    center.y + triangle_height / 2.,
+                ),
+                vec2(center.x - offset, center.y),
+                BORDER as f32 / 2.,
+                color,
+            );
+            draw_triangle(
+                vec2(
+                    center.x + offset + triangle_width,
+                    center.y - triangle_height / 2.,
+                ),
+                vec2(
+                    center.x + offset + triangle_width,
+                    center.y + triangle_height / 2.,
+                ),
+                vec2(center.x + offset, center.y),
+                shadow_color,
+            );
+            draw_triangle_lines(
+                vec2(
+                    center.x + offset + triangle_width,
+                    center.y - triangle_height / 2.,
+                ),
+                vec2(
+                    center.x + offset + triangle_width,
+                    center.y + triangle_height / 2.,
+                ),
+                vec2(center.x + offset, center.y),
+                BORDER as f32 / 2.,
+                color,
+            );
+        }
+    }
+
     fn draw_credits(&self) {
         let bottom = SCREEN_HEIGHT as f32 * 0.85;
         let color = COLOR_ORANGEY_LIGHT;
         let shadow_color = Some(COLOR_ORANGEY_DARK);
+        let font_size = 40.;
 
         self.draw_text(
             "Original game by Anthony Gowland",
             vec2(SCREEN_WIDTH as f32 / 2., bottom),
-            60,
+            font_size as u16,
             color,
             shadow_color,
         );
         self.draw_text(
             "Remake by Slawomir Zborowski (https://slawomir.net)",
-            vec2(SCREEN_WIDTH as f32 / 2., bottom + 60_f32),
-            40,
+            vec2(SCREEN_WIDTH as f32 / 2., bottom + font_size),
+            font_size as u16,
             color,
             shadow_color,
         );
         self.draw_text(
             "Like this game? Check out Binaries! https://binaries.ant-workshop.com/",
-            vec2(SCREEN_WIDTH as f32 / 2., bottom + 100_f32),
-            40,
+            vec2(SCREEN_WIDTH as f32 / 2., bottom + font_size * 2.),
+            font_size as u16,
             color,
             shadow_color,
+        );
+    }
+
+    fn draw_version(&self) {
+        self.draw_text(
+            "v1.0",
+            vec2(40., 24.),
+            32,
+            COLOR_TEALY_LIGHT,
+            Some(COLOR_TEALY_DARK),
         );
     }
 }
@@ -185,16 +266,22 @@ impl Node for Menu {
         node.draw_background();
         node.draw_logo();
         node.draw_credits();
-        draw_text_ex(
-            format!("menu selection: {}", node.index).as_str(),
-            32.,
-            32.,
-            TextParams {
-                color: WHITE,
-                font_size: 32,
-                ..Default::default()
-            },
+        node.draw_menu_option(
+            "Start new game",
+            vec2(SCREEN_WIDTH as f32 / 2., SCREEN_HEIGHT as f32 / 2. - 40.),
+            node.index == 0,
+            COLOR_TEALY_LIGHT,
+            COLOR_TEALY_DARK,
         );
+        node.draw_menu_option(
+            "Continue game",
+            vec2(SCREEN_WIDTH as f32 / 2., SCREEN_HEIGHT as f32 / 2. + 30.),
+            node.index == 1,
+            COLOR_ORANGEY_LIGHT,
+            COLOR_ORANGEY_DARK,
+        );
+
+        node.draw_version();
     }
 
     fn update(mut node: RefMut<Self>) {
