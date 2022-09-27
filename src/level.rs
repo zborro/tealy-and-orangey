@@ -18,6 +18,20 @@ pub struct Level {
 }
 
 impl Level {
+    fn _get_static_colliders(tiled_map: &tiled::Map) -> Vec<Tile> {
+        let mut static_colliders = vec![Tile::Solid; MAP_WIDTH * 2];
+        for (_x, _y, tile) in tiled_map.tiles("physics", None) {
+            let tile = match tile {
+                Some(_) => Tile::Solid,
+                _ => Tile::Empty,
+            };
+            static_colliders.push(tile);
+        }
+        // TODO (optional): why extra solid tiles are required at the bottom?
+        static_colliders.append(&mut vec![Tile::Solid; MAP_WIDTH]);
+        static_colliders
+    }
+
     pub fn new() -> Result<Level, FileError> {
         let resources = storage::get::<Resources>();
 
@@ -46,6 +60,13 @@ impl Level {
         }
 
         let mut physics = World::new();
+        physics.add_static_tiled_layer(
+            Self::_get_static_colliders(&tiled_map),
+            TILE_SIZE_PX as f32,
+            TILE_SIZE_PX as f32,
+            MAP_WIDTH,
+            MAP_LAYER_PHYSICS,
+        );
 
         let balls = Balls::new(
             tealy_spawn_pos,
@@ -62,7 +83,7 @@ impl Level {
     }
 
     pub fn draw(&self) {
-        let y_offset = 64.;
+        let y_offset = 2. * TILE_SIZE_PX as f32;
         let dest = Rect::new(
             0.,
             y_offset,
