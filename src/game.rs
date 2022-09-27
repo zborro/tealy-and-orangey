@@ -18,9 +18,7 @@ impl Game {
     pub fn new(_start_level: u32) -> Game {
         let level = Level::new().unwrap();
 
-        Game {
-            level,
-        }
+        Game { level }
     }
 }
 

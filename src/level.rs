@@ -3,10 +3,10 @@ use macroquad::prelude::*;
 use macroquad_platformer::*;
 use macroquad_tiled as tiled;
 
+use crate::balls::Balls;
 use crate::game::GameColor;
 use crate::resources::Resources;
 use crate::{MAP_LAYER_PHYSICS, MAP_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE_PX};
-use crate::balls::Balls;
 
 const TILE_TEALY_SPAWN_POINT: u32 = 49;
 const TILE_ORANGEY_SPAWN_POINT: u32 = 99;
@@ -48,7 +48,9 @@ impl Level {
         let mut physics = World::new();
 
         let balls = Balls::new(
+            tealy_spawn_pos,
             physics.add_actor(tealy_spawn_pos, TILE_SIZE_PX as i32, TILE_SIZE_PX as i32),
+            orangey_spawn_pos,
             physics.add_actor(orangey_spawn_pos, TILE_SIZE_PX as i32, TILE_SIZE_PX as i32),
         );
 
@@ -71,19 +73,31 @@ impl Level {
         self.tiled_map.draw_tiles("background", dest, None);
         self.tiled_map.draw_tiles("physics", dest, None);
         self.tiled_map.draw_tiles("meta", dest, None);
-        self.balls.draw(
-            self.physics.actor_pos(self.balls.tealy.collider),
-            self.physics.actor_pos(self.balls.orangey.collider),
-        );
+        self.balls.draw();
     }
 
     pub fn update(&mut self) {
-        self.balls.update();
+        self.balls.update(
+            self.physics.actor_pos(self.balls.tealy.collider),
+            self.physics.actor_pos(self.balls.orangey.collider),
+        );
 
-        self.physics.move_h(self.balls.tealy.collider, self.balls.tealy.speed.x * get_frame_time());
-        self.physics.move_v(self.balls.tealy.collider, self.balls.tealy.speed.y * get_frame_time());
+        self.physics.move_h(
+            self.balls.tealy.collider,
+            self.balls.tealy.speed.x * get_frame_time(),
+        );
+        self.physics.move_v(
+            self.balls.tealy.collider,
+            self.balls.tealy.speed.y * get_frame_time(),
+        );
 
-        self.physics.move_h(self.balls.orangey.collider, self.balls.orangey.speed.x * get_frame_time());
-        self.physics.move_v(self.balls.orangey.collider, self.balls.orangey.speed.y * get_frame_time());
+        self.physics.move_h(
+            self.balls.orangey.collider,
+            self.balls.orangey.speed.x * get_frame_time(),
+        );
+        self.physics.move_v(
+            self.balls.orangey.collider,
+            self.balls.orangey.speed.y * get_frame_time(),
+        );
     }
 }
