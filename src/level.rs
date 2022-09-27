@@ -6,14 +6,15 @@ use macroquad_tiled as tiled;
 use crate::game::GameColor;
 use crate::resources::Resources;
 use crate::{MAP_LAYER_PHYSICS, MAP_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE_PX};
+use crate::balls::Balls;
 
 const TILE_TEALY_SPAWN_POINT: u32 = 49;
 const TILE_ORANGEY_SPAWN_POINT: u32 = 99;
 
 pub struct Level {
     tiled_map: tiled::Map,
-    tealy_spawn_pos: Vec2,
-    orangey_spawn_pos: Vec2,
+    physics: World,
+    balls: Balls,
 }
 
 impl Level {
@@ -44,10 +45,17 @@ impl Level {
             }
         }
 
+        let mut physics = World::new();
+
+        let balls = Balls::new(
+            physics.add_actor(tealy_spawn_pos, TILE_SIZE_PX as i32, TILE_SIZE_PX as i32),
+            physics.add_actor(orangey_spawn_pos, TILE_SIZE_PX as i32, TILE_SIZE_PX as i32),
+        );
+
         Ok(Level {
             tiled_map,
-            tealy_spawn_pos,
-            orangey_spawn_pos,
+            physics,
+            balls,
         })
     }
 
@@ -63,12 +71,19 @@ impl Level {
         self.tiled_map.draw_tiles("background", dest, None);
         self.tiled_map.draw_tiles("physics", dest, None);
         self.tiled_map.draw_tiles("meta", dest, None);
+        self.balls.draw(
+            self.physics.actor_pos(self.balls.tealy.collider),
+            self.physics.actor_pos(self.balls.orangey.collider),
+        );
     }
 
-    pub fn get_spawn_position(&self, game_color: GameColor) -> Vec2 {
-        match game_color {
-            GameColor::Tealy => self.tealy_spawn_pos,
-            GameColor::Orangey => self.orangey_spawn_pos,
-        }
+    pub fn update(&mut self) {
+        self.balls.update();
+
+        self.physics.move_h(self.balls.tealy.collider, self.balls.tealy.speed.x * get_frame_time());
+        self.physics.move_v(self.balls.tealy.collider, self.balls.tealy.speed.y * get_frame_time());
+
+        self.physics.move_h(self.balls.orangey.collider, self.balls.orangey.speed.x * get_frame_time());
+        self.physics.move_v(self.balls.orangey.collider, self.balls.orangey.speed.y * get_frame_time());
     }
 }
