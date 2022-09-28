@@ -98,10 +98,7 @@ impl Level {
     }
 
     pub fn update(&mut self) {
-        self.balls.update(
-            self.physics.actor_pos(self.balls.tealy.collider),
-            self.physics.actor_pos(self.balls.orangey.collider),
-        );
+        self.balls.update(&self.physics);
 
         self.physics.move_h(
             self.balls.tealy.collider,

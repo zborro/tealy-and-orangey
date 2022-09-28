@@ -5,6 +5,12 @@ use macroquad_platformer::*;
 
 const BALL_RADIUS: u32 = 16;
 const GRAVITY: f32 = 250.;
+const SPEED_X: f32 = 250.;
+const SPEED_Y: f32 = 300.;
+
+struct CollisionInfo {
+    is_colliding_bottom: bool,
+}
 
 pub struct Ball {
     pub collider: Actor,
@@ -28,9 +34,26 @@ impl Ball {
         );
     }
 
-    fn update(&mut self, pos: Vec2) {
+    fn update(&mut self, pos: Vec2, collision_info: CollisionInfo) {
         self.pos = pos;
-        self.speed.y = GRAVITY;
+
+        if is_key_down(KeyCode::Left) {
+            self.speed.x = -SPEED_X;
+        }
+        else if is_key_down(KeyCode::Right) {
+            self.speed.x = SPEED_X;
+        }
+        else {
+            self.speed.x = 0.;
+        }
+
+        if !collision_info.is_colliding_bottom {
+            self.speed.y += GRAVITY * get_frame_time();
+        }
+
+        if is_key_pressed(KeyCode::Space) && collision_info.is_colliding_bottom {
+            self.speed.y = -SPEED_Y;
+        }
     }
 }
 
@@ -67,8 +90,22 @@ impl Balls {
         self.orangey.draw();
     }
 
-    pub fn update(&mut self, tealy_pos: Vec2, orangey_pos: Vec2) {
-        self.tealy.update(tealy_pos);
-        self.orangey.update(orangey_pos);
+    fn get_collision_info(&self, physics: &World, collider: Actor, pos: Vec2) -> CollisionInfo {
+        let is_colliding_bottom = physics.collide_check(collider, pos + vec2(0., 1.));
+
+        CollisionInfo {
+            is_colliding_bottom,
+        }
+    }
+
+    pub fn update(&mut self, physics: &World) {
+        let tealy_pos = physics.actor_pos(self.tealy.collider);
+        let orangey_pos = physics.actor_pos(self.orangey.collider);
+
+        let collision_info = self.get_collision_info(physics, self.tealy.collider, tealy_pos);
+        self.tealy.update(tealy_pos, collision_info);
+
+        let collision_info = self.get_collision_info(physics, self.orangey.collider, orangey_pos);
+        self.orangey.update(orangey_pos, collision_info);
     }
 }
